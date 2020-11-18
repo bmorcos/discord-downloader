@@ -25,10 +25,10 @@ history**.
 I recommend taking a look through some of the options first:
 ```
 $ python downloader.py --help
-usage: downloader.py [-h] [-ft FILETYPES [FILETYPES ...]] [-o OUTPUT_DIR]
-                     [-c CHANNELS [CHANNELS ...]] [-s SERVER]
-                     [-n NUM_MESSAGES] [-d] [-v] [-p] [-a AFTER] [-b BEFORE]
-                     [-z] [-fs FILTER_STR]
+usage: downloader.py [-h] [-a AFTER] [-b BEFORE] [-c CHANNELS [CHANNELS ...]]
+                     [-d] [-es EXCLUDE_STR] [-ft FILETYPES [FILETYPES ...]]
+                     [-is INCLUDE_STR] [-n NUM_MESSAGES] [-o OUTPUT_DIR] [-p]
+                     [-s SERVER] [-v] [-z]
                      token
 
 Download files and attachments from Discord!
@@ -38,29 +38,6 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -ft FILETYPES [FILETYPES ...], --filetypes FILETYPES [FILETYPES ...]
-                        List of filetypes you want downloaded, e.g. 'txt',
-                        'png'. Default is all filetypes. Specify multiple
-                        items as so: -c 'first' 'second'.
-  -o OUTPUT_DIR, --output_dir OUTPUT_DIR
-                        Path to where files are saved locally. A new directory
-                        will be made in the given 'output_dir'. Defaults to
-                        the current working directory.
-  -c CHANNELS [CHANNELS ...], --channels CHANNELS [CHANNELS ...]
-                        List of channels in which to search for files. Default
-                        is all channels. Specify multiple items as so: -c
-                        'first' 'second'.
-  -s SERVER, --server SERVER
-                        Name of the server in which to search for files.
-                        Default is the first server in the client list.
-  -n NUM_MESSAGES, --num_messages NUM_MESSAGES
-                        How many messages into channel history to search for
-                        files. Pass 0 for no limit.
-  -d, --dry_run         Don't actually download files, recommended to use with
-                        '-v'.
-  -v, --verbose         Show every file found.
-  -p, --prepend_user    Prepend name of user who uploaded the file to the
-                        local filename.
   -a AFTER, --after AFTER
                         Search 'num_messages' starting at this date moving
                         forward unless 'before' was also provided, in which
@@ -71,11 +48,36 @@ optional arguments:
                         backwards unless 'after' was also provided, in which
                         case all files are searched between the given dates.
                         Provide date as a str 'yyyy-mm-dd.
+  -c CHANNELS [CHANNELS ...], --channels CHANNELS [CHANNELS ...]
+                        List of channels in which to search for files. Default
+                        is all channels. Specify multiple items as so: -c
+                        'first' 'second'.
+  -d, --dry_run         Don't actually download files, recommended to use with
+                        '-v'.
+  -es EXCLUDE_STR, --exclude_str EXCLUDE_STR
+                        Only save files that do not contain the given string.
+  -ft FILETYPES [FILETYPES ...], --filetypes FILETYPES [FILETYPES ...]
+                        List of filetypes you want downloaded, e.g. 'txt',
+                        'png'. Default is all filetypes. Specify multiple
+                        items as so: -c 'first' 'second'.
+  -is INCLUDE_STR, --include_str INCLUDE_STR
+                        Only save files that contain the given string.
+  -n NUM_MESSAGES, --num_messages NUM_MESSAGES
+                        How many messages into channel history to search for
+                        files. Note this is messages, not files! you may get
+                        zero files. 'None' for no limit, default is 200.
+  -o OUTPUT_DIR, --output_dir OUTPUT_DIR
+                        Path to where files are saved locally. A new directory
+                        will be made in the given 'output_dir'. Defaults to
+                        the current working directory.
+  -p, --prepend_user    Prepend name of user who uploaded the file to the
+                        local filename.
+  -s SERVER, --server SERVER
+                        Name of the server in which to search for files.
+                        Default is the first server in the client list.
+  -v, --verbose         Show every file found.
   -z, --zipped          Zip all downloaded files into an archive and delete
                         them.
-  -fs FILTER_STR, --filter_str FILTER_STR
-                        Only save files that contain the given string.
-
 ```
 
 and doing dry runs or verbose dry runs before downloading ( ``-v, -d``):

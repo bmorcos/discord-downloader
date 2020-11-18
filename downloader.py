@@ -19,7 +19,8 @@ def main(
     after=None,
     before=None,
     zipped=False,
-    filter_str=None,
+    include_str=None,
+    exclude_str=None,
 ):
     """Bot to download some files from discord
 
@@ -42,7 +43,8 @@ def main(
         dry_run=dry_run,
         after=after,
         before=before,
-        filter_str=filter_str,
+        include_str=include_str,
+        exclude_str=exclude_str,
     ):
         """Wait for client to be ready then do the thing
 
@@ -95,9 +97,18 @@ def main(
                         ):
                             for a in m.attachments:
                                 if (
-                                    filetypes is None
-                                    or a.filename.split(".")[-1] in filetypes
-                                ) and (filter_str is None or filter_str in a.filename):
+                                    (
+                                        filetypes is None
+                                        or a.filename.split(".")[-1] in filetypes
+                                    )
+                                    and (
+                                        include_str is None or include_str in a.filename
+                                    )
+                                    and (
+                                        exclude_str is None
+                                        or exclude_str not in a.filename
+                                    )
+                                ):
                                     if verbose:
                                         print(f" > Found {a.filename}")
                                     count += 1
@@ -144,77 +155,6 @@ if __name__ == "__main__":
 
     parser.add_argument("token", type=str, help="API token for your discord bot.")
     parser.add_argument(
-        "-ft",
-        "--filetypes",
-        type=str,
-        nargs="+",
-        help=(
-            "List of filetypes you want downloaded, e.g. 'txt', 'png'."
-            " Default is all filetypes."
-            " Specify multiple items as so: -c 'first' 'second'."
-        ),
-    )
-    parser.add_argument(
-        "-o",
-        "--output_dir",
-        type=str,
-        default=os.getcwd(),
-        help=(
-            "Path to where files are saved locally. A new directory will"
-            " be made in the given 'output_dir'."
-            " Defaults to the current working directory."
-        ),
-    )
-    parser.add_argument(
-        "-c",
-        "--channels",
-        type=str,
-        nargs="+",
-        help=(
-            "List of channels in which to search for files."
-            " Default is all channels."
-            " Specify multiple items as so: -c 'first' 'second'."
-        ),
-    )
-    parser.add_argument(
-        "-s",
-        "--server",
-        type=str,
-        help=(
-            "Name of the server in which to search for files."
-            " Default is the first server in the client list."
-        ),
-    )
-    parser.add_argument(
-        "-n",
-        "--num_messages",
-        type=int,
-        default=200,
-        help=(
-            "How many messages into channel history to search for files."
-            " Note this is messages, not files! you may get zero files."
-            " 'None' for no limit, default is 200."
-        ),
-    )
-    parser.add_argument(
-        "-d",
-        "--dry_run",
-        action="store_true",
-        help="Don't actually download files, recommended to use with '-v'.",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Show every file found.",
-    )
-    parser.add_argument(
-        "-p",
-        "--prepend_user",
-        action="store_true",
-        help="Prepend name of user who uploaded the file to the local filename.",
-    )
-    parser.add_argument(
         "-a",
         "--after",
         type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
@@ -237,16 +177,93 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
+        "-c",
+        "--channels",
+        type=str,
+        nargs="+",
+        help=(
+            "List of channels in which to search for files."
+            " Default is all channels."
+            " Specify multiple items as so: -c 'first' 'second'."
+        ),
+    )
+    parser.add_argument(
+        "-d",
+        "--dry_run",
+        action="store_true",
+        help="Don't actually download files, recommended to use with '-v'.",
+    )
+    parser.add_argument(
+        "-es",
+        "--exclude_str",
+        type=str,
+        help="Only save files that do not contain the given string.",
+    )
+    parser.add_argument(
+        "-ft",
+        "--filetypes",
+        type=str,
+        nargs="+",
+        help=(
+            "List of filetypes you want downloaded, e.g. 'txt', 'png'."
+            " Default is all filetypes."
+            " Specify multiple items as so: -c 'first' 'second'."
+        ),
+    )
+    parser.add_argument(
+        "-is",
+        "--include_str",
+        type=str,
+        help="Only save files that contain the given string.",
+    )
+    parser.add_argument(
+        "-n",
+        "--num_messages",
+        type=int,
+        default=200,
+        help=(
+            "How many messages into channel history to search for files."
+            " Note this is messages, not files! you may get zero files."
+            " 'None' for no limit, default is 200."
+        ),
+    )
+    parser.add_argument(
+        "-o",
+        "--output_dir",
+        type=str,
+        default=os.getcwd(),
+        help=(
+            "Path to where files are saved locally. A new directory will"
+            " be made in the given 'output_dir'."
+            " Defaults to the current working directory."
+        ),
+    )
+    parser.add_argument(
+        "-p",
+        "--prepend_user",
+        action="store_true",
+        help="Prepend name of user who uploaded the file to the local filename.",
+    )
+    parser.add_argument(
+        "-s",
+        "--server",
+        type=str,
+        help=(
+            "Name of the server in which to search for files."
+            " Default is the first server in the client list."
+        ),
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show every file found.",
+    )
+    parser.add_argument(
         "-z",
         "--zipped",
         action="store_true",
         help="Zip all downloaded files into an archive and delete them.",
-    )
-    parser.add_argument(
-        "-fs",
-        "--filter_str",
-        type=str,
-        help="Only save files that contain the given string.",
     )
 
     args = parser.parse_args()
@@ -267,5 +284,6 @@ if __name__ == "__main__":
         after=args.after,
         before=args.before,
         zipped=args.zipped,
-        filter_str=args.filter_str,
+        include_str=args.include_str,
+        exclude_str=args.exclude_str,
     )
