@@ -65,7 +65,7 @@ optional arguments:
   -n NUM_MESSAGES, --num_messages NUM_MESSAGES
                         How many messages into channel history to search for
                         files. Note this is messages, not files! you may get
-                        zero files. 'None' for no limit, default is 200.
+                        zero files. Pass 0 for no limit, default is 200.
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Path to where files are saved locally. A new directory
                         will be made in the given 'output_dir'. Defaults to
@@ -78,6 +78,7 @@ optional arguments:
   -v, --verbose         Show every file found.
   -z, --zipped          Zip all downloaded files into an archive and delete
                         them.
+
 ```
 
 and doing dry runs or verbose dry runs before downloading ( ``-v, -d``):

@@ -55,8 +55,11 @@ def main(
         if server is None:
             server = client.guilds[0].name  # Default to first server
 
-        if after is not None and before is not None:
+        if (after is not None and before is not None) or num_messages <= 0:
             num_messages = None  # Grab all files between dates, no limit
+
+        # Instead of 'None', print 'inf' when searching unlimited messages
+        num_str = str(num_messages) if num_messages is not None else "inf"
 
         app_info = await client.application_info()
         total = 0
@@ -73,7 +76,7 @@ def main(
                         count = 0
                         if before is None and after is None:
                             print(
-                                f"> Looking at last {num_messages} messages"
+                                f"> Looking at last {num_str} messages"
                                 f" in {c.name}..."
                             )
                         elif before is not None and after is not None:
@@ -83,12 +86,12 @@ def main(
                             )
                         elif before is not None:
                             print(
-                                f"> Looking at last {num_messages} before"
+                                f"> Looking at last {num_str} before"
                                 f" {before:%Y-%m-%d} messages in {c.name}..."
                             )
                         elif after is not None:
                             print(
-                                f"> Looking at first {num_messages} after"
+                                f"> Looking at first {num_str} after"
                                 f" {after:%Y-%m-%d} messages in {c.name}..."
                             )
 
@@ -133,9 +136,7 @@ def main(
         await client.logout()  #
 
     @client.event
-    async def on_disconnect(
-        zip=zipped, dry_run=dry_run, output_dir=output_dir, download_dir=download_dir
-    ):
+    async def on_disconnect(zipped=zipped, dry_run=dry_run, output_dir=output_dir):
         """Print a logout message to confirm client exits"""
         if zipped and not dry_run:
             print("  ** Zipping and cleaning files...")
@@ -224,7 +225,7 @@ if __name__ == "__main__":
         help=(
             "How many messages into channel history to search for files."
             " Note this is messages, not files! you may get zero files."
-            " 'None' for no limit, default is 200."
+            " Pass 0 for no limit, default is 200."
         ),
     )
     parser.add_argument(
