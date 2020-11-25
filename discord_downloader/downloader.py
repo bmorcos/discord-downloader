@@ -1,30 +1,38 @@
 import os
-import argparse
-import datetime
 import shutil
+import datetime
 import discord
+
+from discord_downloader.config import cfg
+from discord_downloader.parser import base_parser
+from discord_downloader.utils import (
+    none_or_int,
+    none_or_str,
+    none_or_date,
+    none_or_list,
+)
 
 
 def main(
     client,
     token,
-    filetypes=None,
-    output_dir=os.getcwd(),
-    channels=None,
-    server=None,
-    dry_run=False,
-    num_messages=200,
-    verbose=False,
-    prepend_user=False,
-    after=None,
-    before=None,
-    zipped=False,
-    include_str=None,
-    exclude_str=None,
+    filetypes=none_or_str(cfg.get("args", "filetypes")),
+    output_dir=str(cfg.get("args", "output_dir")),
+    channels=none_or_list(cfg.get("args", "channels")),
+    server=none_or_str(cfg.get("args", "server")),
+    dry_run=cfg.getboolean("args", "dry_run"),
+    num_messages=none_or_int(cfg.get("args", "num_messages")),
+    verbose=cfg.getboolean("args", "verbose"),
+    prepend_user=cfg.getboolean("args", "prepend_user"),
+    after=none_or_date(cfg.get("args", "after")),
+    before=none_or_date(cfg.get("args", "before")),
+    zipped=cfg.getboolean("args", "zipped"),
+    include_str=none_or_str(cfg.get("args", "include_str")),
+    exclude_str=none_or_str(cfg.get("args", "exclude_str")),
 ):
     """Bot to download some files from discord
 
-    See argparser below for parameter descriptions
+    See parser help strings for details
     """
 
     download_dir = "discord_downloads_" + datetime.datetime.now().strftime("%Y%m%d")
@@ -55,7 +63,9 @@ def main(
         if server is None:
             server = client.guilds[0].name  # Default to first server
 
-        if (after is not None and before is not None) or num_messages <= 0:
+        if (after is not None and before is not None) or (
+            num_messages is None or num_messages <= 0
+        ):
             num_messages = None  # Grab all files between dates, no limit
 
         # Instead of 'None', print 'inf' when searching unlimited messages
@@ -150,123 +160,7 @@ def main(
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        description="Download files and attachments from Discord!"
-    )
-
-    parser.add_argument("token", type=str, help="API token for your discord bot.")
-    parser.add_argument(
-        "-a",
-        "--after",
-        type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
-        help=(
-            "Search 'num_messages' starting at this date moving forward "
-            " unless 'before' was also provided, in which case"
-            " all files are searched between the given dates."
-            " Provide date as a str 'yyyy-mm-dd."
-        ),
-    )
-    parser.add_argument(
-        "-b",
-        "--before",
-        type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d"),
-        help=(
-            "Search 'num_messages' starting at this date moving backwards"
-            " unless 'after' was also provided, in which case"
-            " all files are searched between the given dates."
-            " Provide date as a str 'yyyy-mm-dd."
-        ),
-    )
-    parser.add_argument(
-        "-c",
-        "--channels",
-        type=str,
-        nargs="+",
-        help=(
-            "List of channels in which to search for files."
-            " Default is all channels."
-            " Specify multiple items as so: -c 'first' 'second'."
-        ),
-    )
-    parser.add_argument(
-        "-d",
-        "--dry_run",
-        action="store_true",
-        help="Don't actually download files, recommended to use with '-v'.",
-    )
-    parser.add_argument(
-        "-es",
-        "--exclude_str",
-        type=str,
-        help="Only save files that do not contain the given string.",
-    )
-    parser.add_argument(
-        "-ft",
-        "--filetypes",
-        type=str,
-        nargs="+",
-        help=(
-            "List of filetypes you want downloaded, e.g. 'txt', 'png'."
-            " Default is all filetypes."
-            " Specify multiple items as so: -c 'first' 'second'."
-        ),
-    )
-    parser.add_argument(
-        "-is",
-        "--include_str",
-        type=str,
-        help="Only save files that contain the given string.",
-    )
-    parser.add_argument(
-        "-n",
-        "--num_messages",
-        type=int,
-        default=200,
-        help=(
-            "How many messages into channel history to search for files."
-            " Note this is messages, not files! you may get zero files."
-            " Pass 0 for no limit, default is 200."
-        ),
-    )
-    parser.add_argument(
-        "-o",
-        "--output_dir",
-        type=str,
-        default=os.getcwd(),
-        help=(
-            "Path to where files are saved locally. A new directory will"
-            " be made in the given 'output_dir'."
-            " Defaults to the current working directory."
-        ),
-    )
-    parser.add_argument(
-        "-p",
-        "--prepend_user",
-        action="store_true",
-        help="Prepend name of user who uploaded the file to the local filename.",
-    )
-    parser.add_argument(
-        "-s",
-        "--server",
-        type=str,
-        help=(
-            "Name of the server in which to search for files."
-            " Default is the first server in the client list."
-        ),
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Show every file found.",
-    )
-    parser.add_argument(
-        "-z",
-        "--zipped",
-        action="store_true",
-        help="Zip all downloaded files into an archive and delete them.",
-    )
-
+    parser = base_parser
     args = parser.parse_args()
 
     client = discord.Client()

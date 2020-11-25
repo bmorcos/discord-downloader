@@ -1,0 +1,20 @@
+# Example config file with default arguments
+
+# Set dates as strings: YYYY-MM-DD (no quotes)
+# Set strings without quotes: words
+# Set lists delimited by commas, no quotes: item_1,item_2,item_3
+
+[args]
+after=None
+before=None
+channels=None
+dry_run=False
+exclude_str=None
+filetypes=None
+include_str=None
+num_messages=200
+output_dir=.
+prepend_user=False
+server=None
+verbose=False
+zipped=False

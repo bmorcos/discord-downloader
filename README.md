@@ -8,10 +8,9 @@ zip them up for you.
 
 ## Getting Started
 
-This repo only has one requirement:
-
+Install the package. From the root directory:
 ```
-pip install discord
+pip install -e .
 ```
 
 But first you will need to create a bot and invite it to your server. The
@@ -22,9 +21,11 @@ history**.
 
 ## Usage
 
+### CLI
+
 I recommend taking a look through some of the options first:
 ```
-$ python downloader.py --help
+$ python discord_downloader/downloader.py --help
 usage: downloader.py [-h] [-a AFTER] [-b BEFORE] [-c CHANNELS [CHANNELS ...]]
                      [-d] [-es EXCLUDE_STR] [-ft FILETYPES [FILETYPES ...]]
                      [-is INCLUDE_STR] [-n NUM_MESSAGES] [-o OUTPUT_DIR] [-p]
@@ -84,7 +85,7 @@ optional arguments:
 and doing dry runs or verbose dry runs before downloading ( ``-v, -d``):
 
 ```
-python downloader.py $DISCORD_TOKEN -v -d
+python discord_downloader/downloader.py $DISCORD_TOKEN -v -d
 ```
 
 That being said the defaults are fairly reasonable, the bot will search the the
@@ -92,9 +93,29 @@ most recent 200 messages in each channel for files and download them to the
 current directory:
 
 ```
-python downloader.py $DISCORD_TOKEN
+python discord_downloader/downloader.py $DISCORD_TOKEN
 ```
 
 where ``$DISCORD_TOKEN`` is the bot token found on your discord developer page.
 
 
+### Config
+
+There is a default config file (``discord_downloader/config``) as a an example.
+This file can be modified instead of setting command line arguments every time
+(or passing arguments when scripting).
+
+
+### Scripting
+
+Since this is a package, you can easily import components into your own
+applications and scripts:
+
+```
+import discord_downloader as dd
+```
+
+- **dd.cfg** is config object
+- **dd.base_parser** is the extensible base parser
+- **dd.main** is the core downloader
+- **dd.utils** holds a few helper functions to sanitize input args

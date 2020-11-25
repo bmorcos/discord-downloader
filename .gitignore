@@ -1,1 +1,3 @@
-**/*/discord_downloads*
+**/discord_downloads*
+**/__pycache__
+*.egg-info
