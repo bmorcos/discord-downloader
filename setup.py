@@ -33,5 +33,5 @@ setup(
     description="Simple bot to download files from Discord",
     long_description=read("README.md"),
     install_requires=install_req,
-    python_requires=">=3.5",
+    python_requires=">=3.6",
 )
