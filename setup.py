@@ -22,7 +22,7 @@ def read(*filenames, **kwargs):
     return sep.join(buf)
 
 
-install_req = ["discord"]
+install_req = ["discord.py<2"]
 
 setup(
     name="discord-downloader",
